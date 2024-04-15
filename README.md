@@ -1,25 +1,25 @@
 # elevenlabs-go
 
 ![Go version](https://img.shields.io/badge/go-1.18-blue)
-![License](https://img.shields.io/github/license/haguro/elevenlabs-go)
-![Tests](https://github.com/haguro/elevenlabs-go/actions/workflows/tests.yml/badge.svg?branch=main&event=push)
-[![codecov](https://codecov.io/gh/haguro/elevenlabs-go/branch/main/graph/badge.svg?token=UM33DSSTAG)](https://codecov.io/gh/haguro/elevenlabs-go)
-[![Go Report Card](https://goreportcard.com/badge/github.com/haguro/elevenlabs-go)](https://goreportcard.com/report/github.com/haguro/elevenlabs-go)
-[![Go Reference](https://pkg.go.dev/badge/github.com/haguro/elevenlabs-go.svg)](https://pkg.go.dev/github.com/haguro/elevenlabs-go#section-documentation)
+![License](https://img.shields.io/github/license/pikabot-org/elevenlabs-module)
+![Tests](https://github.com/pikabot-org/elevenlabs-module/actions/workflows/tests.yml/badge.svg?branch=main&event=push)
+[![codecov](https://codecov.io/gh/pikabot-org/elevenlabs-module/branch/main/graph/badge.svg?token=UM33DSSTAG)](https://codecov.io/gh/pikabot-org/elevenlabs-module)
+[![Go Report Card](https://goreportcard.com/badge/github.com/pikabot-org/elevenlabs-module)](https://goreportcard.com/report/github.com/pikabot-org/elevenlabs-module)
+[![Go Reference](https://pkg.go.dev/badge/github.com/pikabot-org/elevenlabs-module.svg)](https://pkg.go.dev/github.com/pikabot-org/elevenlabs-module#section-documentation)
 
 This is a Go client library for the [ElevenLabs](https://elevenlabs.io/) voice cloning and speech synthesis platform. It provides a basic interface for Go programs to interact with the ElevenLabs [API](https://docs.elevenlabs.io/api-reference).
 
 ## Installation
 
 ```bash
-go get github.com/haguro/elevenlabs-go
+go get github.com/pikabot-org/elevenlabs-module
 ```
 
 ## Example Usage
 
 Make sure to replace `"your-api-key"` in all examples with your actual API key. Refer to the official Elevenlabs [API documentation](https://docs.elevenlabs.io/api-reference/quick-start/introduction) for further details.
 
-Full documentation of this library is available [here](https://pkg.go.dev/github.com/haguro/elevenlabs-go).
+Full documentation of this library is available [here](https://pkg.go.dev/github.com/pikabot-org/elevenlabs-module).
 
 ### Using a New Client Instance
 
@@ -34,7 +34,7 @@ import (
  "os"
  "time"
 
- "github.com/haguro/elevenlabs-go"
+ "github.com/pikabot-org/elevenlabs-module"
 )
 
 func main() {
@@ -74,7 +74,7 @@ import (
  "os"
  "time"
 
- el "github.com/haguro/elevenlabs-go"
+ el "github.com/pikabot-org/elevenlabs-module"
 )
 
 func main() {
@@ -115,7 +115,7 @@ import (
  "os/exec"
  "time"
 
- "github.com/haguro/elevenlabs-go"
+ "github.com/pikabot-org/elevenlabs-module"
 )
 
 func main() {
