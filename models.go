@@ -38,6 +38,12 @@ type TextToSpeechRequest struct {
 	VoiceSettings *VoiceSettings `json:"voice_settings,omitempty"`
 }
 
+type SpeechToSpeechRequest struct {
+	Audio         multipart.File `json:"audio"`
+	ModelID       string         `json:"model_id,omitempty"`
+	VoiceSettings *VoiceSettings `json:"voice_settings,omitempty"`
+}
+
 type GetVoicesResponse struct {
 	Voices []Voice `json:"voices"`
 }

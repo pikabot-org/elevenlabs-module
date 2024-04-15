@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/haguro/elevenlabs-go"
+	"github.com/pikabot-org/elevenlabs-module"
 )
 
 func ExampleClient_TextToSpeech() {

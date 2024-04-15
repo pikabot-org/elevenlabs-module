@@ -1,3 +1,3 @@
-module github.com/haguro/elevenlabs-go
+module github.com/pikabot-org/elevenlabs-module
 
 go 1.18

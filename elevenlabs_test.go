@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/haguro/elevenlabs-go"
+	"github.com/pikabot-org/elevenlabs-module"
 )
 
 const (
