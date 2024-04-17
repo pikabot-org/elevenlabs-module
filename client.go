@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"sync"
@@ -247,12 +248,37 @@ func (c *Client) TextToSpeechStream(streamWriter io.Writer, voiceID string, ttsR
 //
 // It returns a byte slice that contains mpeg encoded audio data in case of success, or an error.
 func (c *Client) SpeechToSpeech(voiceID string, stsReq SpeechToSpeechRequest, queries ...QueryFunc) ([]byte, error) {
-	reqBody, err := json.Marshal(stsReq)
+	var requestBody bytes.Buffer
+	multiPartWriter := multipart.NewWriter(&requestBody)
+
+	// Add the audio file as a part of the form
+	if stsReq.Audio == nil {
+		return nil, fmt.Errorf("audio file is required")
+	}
+	filePart, err := multiPartWriter.CreateFormFile("audio", "audio.mp3")
 	if err != nil {
 		return nil, err
 	}
+	_, err = io.Copy(filePart, stsReq.Audio)
+	if err != nil {
+		return nil, err
+	}
+
+	// Add the other fields as a JSON part of the form
+	jsonPart, err := multiPartWriter.CreateFormField("metadata")
+	if err != nil {
+		return nil, err
+	}
+	if err := json.NewEncoder(jsonPart).Encode(stsReq); err != nil {
+		return nil, err
+	}
+
+	// Important: close the writer to finalize the multipart body
+	multiPartWriter.Close()
+
+	contentType := multiPartWriter.FormDataContentType()
 	b := bytes.Buffer{}
-	err = c.doRequest(c.ctx, &b, http.MethodPost, fmt.Sprintf("%s/speech-to-speech/%s", c.baseURL, voiceID), bytes.NewBuffer(reqBody), contentTypeJSON, queries...)
+	err = c.doRequest(c.ctx, &b, http.MethodPost, fmt.Sprintf("%s/speech-to-speech/%s", c.baseURL, voiceID), &requestBody, contentType, queries...)
 	if err != nil {
 		return nil, err
 	}
