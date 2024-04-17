@@ -231,6 +231,26 @@ type AddEditVoiceRequest struct {
 	Labels      map[string]string
 }
 
+type CreateDubRequest struct {
+	Mode       string         `json:"mode"`
+	TargetLang string         `json:"target_lang"`
+	VoiceID    string         `json:"voice_id"`
+	File       multipart.File `json:"-"` // Audio file is attached as a miltipart/form-data
+}
+
+type CreateDubResponse struct {
+	DubbingID           string `json:"dubbing_id"`
+	ExpectedDurationSec int    `json:"expected_duration_sec"`
+}
+
+type DubMetadata struct {
+	DubbingID       string   `json:"dubbing_id"`
+	Name            string   `json:"name"`
+	Status          string   `json:"status"`
+	Error           string   `json:"error"`
+	TargetLanguages []string `json:"target_languages"`
+}
+
 func (r *AddEditVoiceRequest) buildRequestBody() (*bytes.Buffer, string, error) {
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)

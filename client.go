@@ -609,3 +609,74 @@ func (c *Client) GetUser() (User, error) {
 
 	return user, nil
 }
+
+func (c *Client) CreateDubbingProject(dubReq CreateDubRequest) (CreateDubResponse, error) {
+	var requestBody bytes.Buffer
+	multiPartWriter := multipart.NewWriter(&requestBody)
+
+	// Add the audio file as a part of the form
+	if dubReq.File == nil {
+		return CreateDubResponse{}, fmt.Errorf("audio file is required")
+	}
+	filePart, err := multiPartWriter.CreateFormFile("file", "audio.mp3")
+	if err != nil {
+		return CreateDubResponse{}, err
+	}
+	_, err = io.Copy(filePart, dubReq.File)
+	if err != nil {
+		return CreateDubResponse{}, err
+	}
+
+	// Add the other fields as a JSON part of the form
+	jsonPart, err := multiPartWriter.CreateFormField("metadata")
+	if err != nil {
+		return CreateDubResponse{}, err
+	}
+	if err := json.NewEncoder(jsonPart).Encode(dubReq); err != nil {
+		return CreateDubResponse{}, err
+	}
+
+	// Important: close the writer to finalize the multipart body
+	multiPartWriter.Close()
+
+	contentType := multiPartWriter.FormDataContentType()
+	b := bytes.Buffer{}
+	err = c.doRequest(c.ctx, &b, http.MethodPost, fmt.Sprintf("%s/dubbing", c.baseURL), &requestBody, contentType)
+	if err != nil {
+		return CreateDubResponse{}, err
+	}
+
+	var dubResp CreateDubResponse
+	if err := json.Unmarshal(b.Bytes(), &dubResp); err != nil {
+		return CreateDubResponse{}, err
+	}
+	return dubResp, nil
+}
+
+func (c *Client) GetDubbingProjectMetadata(dubing_id string) (DubMetadata, error) {
+	var dubMetadata DubMetadata
+	b := bytes.Buffer{}
+	err := c.doRequest(c.ctx, &b, http.MethodGet, fmt.Sprintf("%s/dubbing/%s", c.baseURL, dubing_id), &bytes.Buffer{}, contentTypeJSON)
+	if err != nil {
+		return DubMetadata{}, err
+	}
+
+	if err := json.Unmarshal(b.Bytes(), &dubMetadata); err != nil {
+		return DubMetadata{}, err
+	}
+
+	return dubMetadata, nil
+}
+
+func (c *Client) GetDubbingFile(dubing_id string, language_code string) ([]byte, error) {
+	b := bytes.Buffer{}
+	err := c.doRequest(c.ctx, &b, http.MethodGet, fmt.Sprintf("%s/dubbing/%s/audio/%s", c.baseURL, dubing_id, language_code), &bytes.Buffer{}, contentTypeJSON)
+	if err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+func (c *Client) DeleteDubbingProject(dubing_id string) error {
+	return c.doRequest(c.ctx, &bytes.Buffer{}, http.MethodDelete, fmt.Sprintf("%s/dubbing/%s", c.baseURL, dubing_id), &bytes.Buffer{}, contentTypeJSON)
+}

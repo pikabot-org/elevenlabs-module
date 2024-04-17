@@ -109,3 +109,23 @@ func GetSubscription() (Subscription, error) {
 func GetUser() (User, error) {
 	return getDefaultClient().GetUser()
 }
+
+// CreateDubbingProject calls the CreateDubbingProject method on the default client.
+func CreateDubbingProject(dubReq CreateDubRequest) (CreateDubResponse, error) {
+	return getDefaultClient().CreateDubbingProject(dubReq)
+}
+
+// GetDubbingProjectMetadata calls the GetDubbingProjectMetadata method on the default client.
+func GetDubbingProjectMetadata(dubing_id string) (DubMetadata, error) {
+	return getDefaultClient().GetDubbingProjectMetadata(dubing_id)
+}
+
+// GetDubbingFile calls the GetDubbingFile method on the default client.
+func GetDubbingFile(dubing_id string, language_code string) ([]byte, error) {
+	return getDefaultClient().GetDubbingFile(dubing_id, language_code)
+}
+
+// DeleteDubbingProject calls the DeleteDubbingProject method on the default client.
+func DeleteDubbingProject(dubing_id string) error {
+	return getDefaultClient().DeleteDubbingProject(dubing_id)
+}

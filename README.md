@@ -27,6 +27,7 @@ As of the time of writing (April 2024), the library provides Go bindings for som
 - User information
 - Voices management
 - Models
+- Dubbing
 
 There is still no support for:
 - Voice generation
@@ -34,7 +35,6 @@ There is still no support for:
 - Projects
 - Pronunciation dictionaries
 - Audio-native
-- Dubbing
 
 The library is used in production and might be updated to include more features as they are needed in our projects.
 
