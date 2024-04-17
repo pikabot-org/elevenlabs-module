@@ -1,13 +1,42 @@
-# elevenlabs-go
+<h1 align="center">Elevenlabs Module</h1>
 
 ![Go version](https://img.shields.io/badge/go-1.18-blue)
 ![License](https://img.shields.io/github/license/pikabot-org/elevenlabs-module)
-![Tests](https://github.com/pikabot-org/elevenlabs-module/actions/workflows/tests.yml/badge.svg?branch=main&event=push)
-[![codecov](https://codecov.io/gh/pikabot-org/elevenlabs-module/branch/main/graph/badge.svg?token=UM33DSSTAG)](https://codecov.io/gh/pikabot-org/elevenlabs-module)
 [![Go Report Card](https://goreportcard.com/badge/github.com/pikabot-org/elevenlabs-module)](https://goreportcard.com/report/github.com/pikabot-org/elevenlabs-module)
 [![Go Reference](https://pkg.go.dev/badge/github.com/pikabot-org/elevenlabs-module.svg)](https://pkg.go.dev/github.com/pikabot-org/elevenlabs-module#section-documentation)
 
 This is a Go client library for the [ElevenLabs](https://elevenlabs.io/) voice cloning and speech synthesis platform. It provides a basic interface for Go programs to interact with the ElevenLabs [API](https://docs.elevenlabs.io/api-reference).
+
+## Built With
+
+### Language
+
+**Go** is fast, reliable and easy to use language. It is perfect for microservices.
+
+### APIs
+
+This service requires **Elevenlabs** API key for communicating with the platform.
+
+## Status and Future Plans
+
+As of the time of writing (April 2024), the library provides Go bindings for some endpoints of the Elevenlabs API:
+- Text to Speech with streaming support
+- Speech to Speech
+- History of requests
+- Sample voices
+- User information
+- Voices management
+- Models
+
+There is still no support for:
+- Voice generation
+- Shared voices
+- Projects
+- Pronunciation dictionaries
+- Audio-native
+- Dubbing
+
+The library is used in production and might be updated to include more features as they are needed in our projects.
 
 ## Installation
 
@@ -171,12 +200,6 @@ immediately, even if the buffer isn't full.`
 }
 ```
 
-## Status and Future Plans
-
-As of the time of writing (June 24, 2023), the library provides Go bindings for 100% of Elevenlabs's API methods. I do plan to add few more utility type functions should there be some need or enough request for them.
-
-According to Elevenlabs, the API is still considered experimental and is subject to and likely to change.
-
 ## Contributing
 
 Contributions are welcome! If you have any ideas, improvements, or bug fixes, please open an issue or submit a pull request.
@@ -196,3 +219,9 @@ This project is licensed under the [MIT License](LICENSE).
 ## Warranty
 
 This code library is provided "as is" and without any warranties whatsoever. Use at your own risk. More details in the [LICENSE](LICENSE) file.
+
+## Contacts
+
+- Main contirbutor, [Ivan Chekanov](https://ichekanov.ru), [Telegram](https://t.me/ischknv)
+
+For any questions or concerns, please reach out to the contributors listed above or file an issue.
