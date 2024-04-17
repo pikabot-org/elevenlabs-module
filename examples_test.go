@@ -3,17 +3,19 @@ package elevenlabs_test
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
+	"testing"
 	"time"
 
 	"github.com/pikabot-org/elevenlabs-module"
 )
 
-func ExampleClient_TextToSpeech() {
+var apiKey string = "YOUR_API_KEY_HERE" // todo: Find a way to get the API key from the environment
+
+func TestExampleClient_TextToSpeech(t *testing.T) {
 	// Create a new client
-	client := elevenlabs.NewClient(context.Background(), "your-api-key", 30*time.Second)
+	client := elevenlabs.NewClient(context.Background(), apiKey, 30*time.Second)
 
 	// Create a TextToSpeechRequest
 	ttsReq := elevenlabs.TextToSpeechRequest{
@@ -24,24 +26,27 @@ func ExampleClient_TextToSpeech() {
 	// Call the TextToSpeech method on the client, using the "Adam"'s voice ID.
 	audio, err := client.TextToSpeech("pNInz6obpgDQGcFmaJgB", ttsReq)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatalf("Got %T error: %q\n", err, err)
+		return
 	}
 
 	// Write the audio file bytes to disk
 	if err := os.WriteFile("adam.mp3", audio, 0644); err != nil {
-		log.Fatal(err)
+		t.Fatalf("Could not write audio file: %s", err)
+		return
 	}
 
-	log.Println("Successfully generated audio file")
+	t.Log("Successfully generated audio file")
 }
-func ExampleClient_TextToSpeechStream() {
+
+func TestExampleClient_TextToSpeechStream(t *testing.T) {
 	message := `The concept of "flushing" typically applies to I/O buffers in many programming 
 languages, which store data temporarily in memory before writing it to a more permanent location
 like a file or a network connection. Flushing the buffer means writing all the buffered data
 immediately, even if the buffer isn't full.`
 
 	// Set your API key
-	elevenlabs.SetAPIKey("your-api-key")
+	elevenlabs.SetAPIKey(apiKey)
 
 	// Set a large enough timeout to ensure the stream is not interrupted.
 	elevenlabs.SetTimeout(1 * time.Minute)
@@ -52,12 +57,13 @@ immediately, even if the buffer isn't full.`
 	// Get a pipe connected to the mpv's standard input
 	pipe, err := cmd.StdinPipe()
 	if err != nil {
-		log.Fatal(err)
+		t.Fatalf("Could not get pipe: %s", err)
+		return
 	}
 
 	// Attempt to run the command in a separate process
 	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
+		t.Fatalf("Could not start mpv: %s", err)
 	}
 
 	// Stream the audio to the pipe connected to mpv's standard input
@@ -68,25 +74,26 @@ immediately, even if the buffer isn't full.`
 			Text:    message,
 			ModelID: "eleven_multilingual_v1",
 		}); err != nil {
-		log.Fatalf("Got %T error: %q\n", err, err)
+		t.Fatalf("Got %T error: %q\n", err, err)
 	}
 
 	// Close the pipe when all stream has been copied to the pipe
 	if err := pipe.Close(); err != nil {
-		log.Fatalf("Could not close pipe: %s", err)
+		t.Fatalf("Could not close pipe: %s", err)
 	}
-	log.Print("Streaming finished.")
+	t.Log("Streaming finished.")
 
 	// Wait for mpv to exit. With the pipe closed, it will do that as
 	// soon as it finishes playing
 	if err := cmd.Wait(); err != nil {
-		log.Fatal(err)
+		t.Fatalf("mpv exited with error: %s", err)
+		return
 	}
 
-	log.Print("All done.")
+	t.Log("All done.")
 }
 
-func ExampleClient_GetHistory() {
+func TestExampleClient_GetHistory(t *testing.T) {
 	// Define a helper function to print history items
 	printHistory := func(r elevenlabs.GetHistoryResponse, p int) {
 		fmt.Printf("--Page %d--\n", p)
@@ -96,13 +103,13 @@ func ExampleClient_GetHistory() {
 		}
 	}
 	// Create a new client
-	client := elevenlabs.NewClient(context.Background(), "your-api-key", 30*time.Second)
+	client := elevenlabs.NewClient(context.Background(), apiKey, 30*time.Second)
 
 	// Get and print the first page (5 items).
 	page := 1
 	historyResp, nextPage, err := client.GetHistory(elevenlabs.PageSize(5))
 	if err != nil {
-		log.Fatal(err)
+		t.Fatalf("Got %T error: %q\n", err, err)
 	}
 	printHistory(historyResp, page)
 
@@ -113,8 +120,41 @@ func ExampleClient_GetHistory() {
 		// can be overwritten by passing a call to PageSize with the new size.
 		historyResp, nextPage, err = nextPage()
 		if err != nil {
-			log.Fatal(err)
+			t.Fatalf("Got %T error: %q\n", err, err)
 		}
 		printHistory(historyResp, page)
 	}
+}
+
+func TestExampleClient_SpeechToSpeech(t *testing.T) {
+	// Create a new client
+	client := elevenlabs.NewClient(context.Background(), apiKey, 30*time.Second)
+	// Using previously generated audio file "adam.mp3" as input
+	inputAudio, err := os.Open("adam.mp3")
+	if err != nil {
+		t.Fatalf("Could not open audio file: %s", err)
+		return
+	}
+	defer inputAudio.Close()
+
+	// Create a SpeechToSpeechRequest
+	stsReq := elevenlabs.SpeechToSpeechRequest{
+		Audio:   inputAudio,
+		ModelID: "eleven_english_sts_v2",
+	}
+
+	// Call the SpeechToSpeech method on the client, using the "Rachel"'s voice ID.
+	audio, err := client.SpeechToSpeech("21m00Tcm4TlvDq8ikWAM", stsReq)
+	if err != nil {
+		t.Fatalf("Got %T error: %q\n", err, err)
+		return
+	}
+
+	// Write the audio file bytes to disk
+	if err := os.WriteFile("rachel.mp3", audio, 0644); err != nil {
+		t.Fatalf("Could not write audio file: %s", err)
+		return
+	}
+
+	t.Log("Successfully generated audio file")
 }
