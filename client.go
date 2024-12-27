@@ -39,15 +39,17 @@ type QueryFunc func(*url.Values)
 // (which defaults to 30 seconds) can be modified with SetAPIKey and SetTimeout respectively, but the parent
 // context is fixed and is set to context.Background().
 type Client struct {
-	baseURL string
-	apiKey  string
-	timeout time.Duration
-	ctx     context.Context
+	baseURL       string
+	apiKey        string
+	timeout       time.Duration
+	useHttpsProxy bool
+	httpsProxyURL *url.URL
+	ctx           context.Context
 }
 
 func getDefaultClient() *Client {
 	once.Do(func() {
-		defaultClient = NewClient(context.Background(), "", defaultTimeout)
+		defaultClient = NewClient(context.Background(), "", defaultTimeout, false, nil)
 	})
 	return defaultClient
 }
@@ -78,8 +80,8 @@ func SetTimeout(timeout time.Duration) {
 // a time.Duration argument that represents the timeout duration for the client's requests.
 //
 // It returns a pointer to a newly created Client.
-func NewClient(ctx context.Context, apiKey string, reqTimeout time.Duration) *Client {
-	return &Client{baseURL: elevenlabsBaseURL, apiKey: apiKey, timeout: reqTimeout, ctx: ctx}
+func NewClient(ctx context.Context, apiKey string, reqTimeout time.Duration, useHttpsProxy bool, httpsProxyURL *url.URL) *Client {
+	return &Client{baseURL: elevenlabsBaseURL, apiKey: apiKey, timeout: reqTimeout, useHttpsProxy: useHttpsProxy, httpsProxyURL: httpsProxyURL, ctx: ctx}
 }
 
 func (c *Client) doRequest(ctx context.Context, RespBodyWriter io.Writer, method, url string, bodyBuf io.Reader, contentType string, queries ...QueryFunc) error {
@@ -104,7 +106,19 @@ func (c *Client) doRequest(ctx context.Context, RespBodyWriter io.Writer, method
 	}
 	req.URL.RawQuery = q.Encode()
 
-	client := &http.Client{}
+	var client *http.Client
+	if c.useHttpsProxy && c.httpsProxyURL != nil {
+		// Create custom transport with the proxy
+		transport := &http.Transport{
+			Proxy: http.ProxyURL(c.httpsProxyURL),
+		}
+		client = &http.Client{
+			Transport: transport,
+		}
+	} else {
+		client = &http.Client{}
+	}
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
